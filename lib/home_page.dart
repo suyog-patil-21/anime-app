@@ -3,7 +3,6 @@ import 'package:anime_app/download_page.dart';
 import 'package:flutter/material.dart';
 
 final List<String> alpha = [
-  'A',
   'B',
   'C',
   'D',

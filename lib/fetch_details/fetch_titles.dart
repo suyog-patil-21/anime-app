@@ -5,6 +5,8 @@ import 'package:web_scraper/web_scraper.dart';
 
 const mainPageurl = 'https://eng.cartoonsarea.xyz';
 final _webScraper = WebScraper(mainPageurl);
+
+// * this is use for fetching the list
 Future<List<Map<String, dynamic>>> fetchlist({required String urlpath}) async {
   List<Map<String, dynamic>> titleNames = [];
   String path = '';
@@ -26,6 +28,7 @@ Future<List<Map<String, dynamic>>> fetchlist({required String urlpath}) async {
   return titleNames;
 }
 
+// ? this is used to remove the starting url part
 String removeurlpart({required String st, int rank = 3}) {
   if (rank == 0) {
     // print('String when sented to the function \n string is : $st');
@@ -39,6 +42,7 @@ String removeurlpart({required String st, int rank = 3}) {
   }
 }
 
+// * this is used for fetching episode pages
 Future<List<Map<String, dynamic>>> fetchepisode(
     {required String urlpath,
     required String titleName,

@@ -1,4 +1,5 @@
 import 'package:anime_app/common_widgets.dart';
+import 'package:anime_app/download_page.dart';
 import 'package:anime_app/fetch_details/fetch_titles.dart';
 import 'package:flutter/material.dart';
 
@@ -6,9 +7,7 @@ class EpisodesPage extends StatefulWidget {
   String seaonUrl; // url to search number of season
   String seriestitle;
 
-  var key;
-
-  EpisodesPage({required this.seaonUrl, required this.seriestitle, this.key})
+  EpisodesPage({required this.seaonUrl, required this.seriestitle, Key? key})
       : super(key: key);
   @override
   _EpisodesPageState createState() => _EpisodesPageState();
@@ -17,8 +16,8 @@ class EpisodesPage extends StatefulWidget {
 class _EpisodesPageState extends State<EpisodesPage> {
   bool isLoading = false;
   var seasonlisturl = [];
-  var seasonInit = 1; //for drop down button inital value set to 1
-  List<int> seasonCountlist = []; // if not working use late keyword
+  var seasonInit = 1; //? for drop down button inital value set to 1
+  List<int> seasonCountlist = []; //! if not working use late keyword
   List<Map<String, dynamic>> episodeNoList = [];
   @override
   initState() {
@@ -55,7 +54,11 @@ class _EpisodesPageState extends State<EpisodesPage> {
         floatingActionButton: FloatingActionButton(
             tooltip: 'Download Complete Season',
             backgroundColor: Colors.amber,
-            onPressed: () {},
+            onPressed: () {
+              //TODO : implement Download all episode
+              //FIXME : After wards
+              DownloadPage();
+            },
             child: const Icon(Icons.cloud_download_rounded)),
         body: CustomScrollView(slivers: [
           SliverAppBar(
@@ -118,31 +121,9 @@ class _EpisodesPageState extends State<EpisodesPage> {
                         tooltip: 'Download Single Episode',
                         icon: const Icon(Icons.sim_card_download),
                         onPressed: () {
-                          // var status = await Permission.storage.request();
-                          // if (status.isGranted) {
                           //TODO impliment the Download of single file
-                          // final externalDir =
-                          //     await getExternalStorageDirectory();
-
-                          // debugPrint('Entering into Download');
-                          // final id = await FlutterDownloader.enqueue(
-                          //   url:
-                          //       "https://firebasestorage.googleapis.com/v0/b/storage-3cff8.appspot.com/o/2020-05-29%2007-18-34.mp4?alt=media&token=841fffde-2b83-430c-87c3-2d2fd658fd41",
-                          //   savedDir: externalDir!.path,
-                          //   fileName: "download",
-                          //   showNotification: true,
-                          //   openFileFromNotification: true,
-                          // );
-                          // } else {
-                          //   ScaffoldMessenger.of(context).clearSnackBars();
-                          //   ScaffoldMessenger.of(context)
-                          //       .showSnackBar(const SnackBar(
-                          //           backgroundColor: Colors.redAccent,
-                          //           content: Text(
-                          //             'Premision Not Granted',
-                          //             style: TextStyle(color: Colors.white),
-                          //           )));
-                          // }
+                          debugPrint(
+                              'single download pressed ${episodeNoList[index]}');
                         },
                       ),
                       tileColor: Colors.grey[900],
