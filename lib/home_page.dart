@@ -1,6 +1,7 @@
 import 'package:anime_app/Series_page.dart';
 import 'package:anime_app/download_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 final List<String> alpha = [
   'B',
@@ -21,8 +22,6 @@ final List<String> alpha = [
   'R',
   'S',
   'T',
-  'U',
-  'X',
   'Y',
   'Z'
 ];
@@ -52,20 +51,22 @@ class _MyHomePageState extends State<MyHomePage> {
           title: const Text('Anime'),
           centerTitle: true,
         ),
-        body: GridView.builder(
-            itemCount: alpha.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4),
-            itemBuilder: (BuildContext context, int index) {
-              return FlatButton(
-                  child: customAlfa(alpha[index]),
-                  onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return SeriesPage(
-                          titleBName: alpha[index],
-                        );
-                      })));
-            }));
+        body: LayoutBuilder(
+          builder: (context, constraints) => GridView.builder(
+              itemCount: alpha.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: constraints.maxWidth < 600 ? 4 : 8),
+              itemBuilder: (BuildContext context, int index) {
+                return FlatButton(
+                    child: customAlfa(alpha[index]),
+                    onPressed: () => Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return SeriesPage(
+                            titleBName: alpha[index],
+                          );
+                        })));
+              }),
+        ));
   }
 }
 

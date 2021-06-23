@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// * Loading Widget with circular progress indicator
 Widget loadingWidget({required double width}) {
   return Center(
     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [

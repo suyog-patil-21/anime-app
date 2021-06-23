@@ -6,7 +6,7 @@ import 'package:web_scraper/web_scraper.dart';
 const mainPageurl = 'https://eng.cartoonsarea.xyz';
 final _webScraper = WebScraper(mainPageurl);
 
-// * this is use for fetching the list
+// * this is use for fetching the list from the web url
 Future<List<Map<String, dynamic>>> fetchlist({required String urlpath}) async {
   List<Map<String, dynamic>> titleNames = [];
   String path = '';
@@ -28,7 +28,7 @@ Future<List<Map<String, dynamic>>> fetchlist({required String urlpath}) async {
   return titleNames;
 }
 
-// ? this is used to remove the starting url part
+// ? this is used to remove the starting url part before the first '/'
 String removeurlpart({required String st, int rank = 3}) {
   if (rank == 0) {
     // print('String when sented to the function \n string is : $st');
@@ -43,10 +43,11 @@ String removeurlpart({required String st, int rank = 3}) {
 }
 
 // * this is used for fetching episode pages
-Future<List<Map<String, dynamic>>> fetchepisode(
-    {required String urlpath,
-    required String titleName,
-    required String seasonNum}) async {
+Future<List<Map<String, dynamic>>> fetchepisode({
+  required String urlpath,
+  // required String titleName,
+  // required String seasonNum
+}) async {
   // print('\nFETCH EPISODE : $urlpath');
   List<Map<String, dynamic>> realepisode = []; // real title and link map
   List<Map<String, dynamic>> episodeList = await fetchlist(urlpath: urlpath);
@@ -56,12 +57,12 @@ Future<List<Map<String, dynamic>>> fetchepisode(
   var pagelist = _webScraper.getElementTitle('ul.pagination > li > a');
 //  print(
   //    '\t\t\t\t ===\t ===\t ===\t === this is the Pagination list : $pagelist');
-  // print('<<<<<<before PAgination : ${episodeList.length} ');
+  // print('<<<<<<before Pagination : ${episodeList.length} ');
   if (pagelist.isNotEmpty) {
-    pagelist.removeAt(0);
+    pagelist.removeAt(0); // ! removing the first page because duplication
     // print(
     // '\t\t\t\t ===\t ===\t ===\t === this is the Pagination list inside : $pagelist');
-    // fetxhing no of pages
+    // fetching no of pages
     for (var element in pagelist) {
       // print('new pages added ');
       List<Map<String, dynamic>> temp1 =
@@ -71,18 +72,23 @@ Future<List<Map<String, dynamic>>> fetchepisode(
     }
   }
   // print('<<<<<<<after PAgination : ${episodeList.length} ');
-  for (var element in episodeList) {
-    // print('>>>>>>>>>>>>>>searching WEbsite : ${element['attributes']['href']}');
-    realepisode.add(await _pureElement(
-        element['attributes']['href'], titleName, seasonNum));
-  }
-  print('<<<<<<<AT very last after Pagination : ${episodeList.length} ');
-
+  // * to uncomment if doesn't work
+  // for (var element in episodeList) {
+  //   // print('>>>>>>>>>>>>>>searching WEbsite : ${element['attributes']['href']}');
+  //   realepisode.add(await _pureElement(
+  //       element['attributes']['href'], titleName, seasonNum));
+  // }
+  // print('<<<<<<<AT very last after Pagination : ${episodeList.length} ');
+  //* till here
   // print('\t\t\t   Getting the output : $realepisode');
-  return realepisode;
+  // * to uncomment if doesn't work
+  // return realepisode;
+  // * till here
+  return episodeList;
 }
 
-Future<Map<String, dynamic>> _pureElement(
+// ? pure element is use to find the real title name and url for the video
+Future<Map<String, dynamic>> pureElement(
     String path, String titleName, String seasonNum) async {
   //path : element['attributes']['href']
   List<Map<String, dynamic>> temptitle = [];
