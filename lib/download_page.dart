@@ -1,8 +1,6 @@
 import 'package:anime_app/models/download_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class DownloadPage extends StatefulWidget {
@@ -57,46 +55,32 @@ class _DownloadPageState extends State<DownloadPage> {
 }
 
 class DownIndicator extends StatefulWidget {
-  DownIndicator({Key? key, required this.episodeDetails}) : super(key: key);
   var episodeDetails;
+  DownIndicator({Key? key, required this.episodeDetails}) : super(key: key);
   @override
   _DownIndicatorState createState() => _DownIndicatorState();
 }
 
-class _DownIndicatorState extends State<DownIndicator>
-    with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  bool isDownloading = false;
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 450));
-  }
+class _DownIndicatorState extends State<DownIndicator> {
+  // * used for Animation Control
 
-  void _handleOnPressed() async {
+  IconData buttonPP = Icons.pause_rounded;
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  // }
+
+  void onpressed() {
     setState(() {
-      isDownloading = !isDownloading;
-      isDownloading
-          ? _animationController.forward()
-          : _animationController.reverse();
+      if (true) {
+        Provider.of<DownloadModal>(context, listen: false)
+            .pauseDownload(widget.episodeDetails);
+      } else {
+        Provider.of<DownloadModal>(context, listen: false)
+            .resumeDownload(widget.episodeDetails);
+      }
     });
-    // final status = await Permission.storage.request();
-
-    // if (status.isGranted) {
-    //   final externalDir = await getExternalStorageDirectory();
-
-    //   final id = await FlutterDownloader.enqueue(
-    //     url:
-    //         "https://firebasestorage.googleapis.com/v0/b/storage-3cff8.appspot.com/o/2020-05-29%2007-18-34.mp4?alt=media&token=841fffde-2b83-430c-87c3-2d2fd658fd41",
-    //     savedDir: externalDir!.path + "/Download",
-    //     // fileName: "Download",
-    //     showNotification: true,
-    //     openFileFromNotification: true,
-    //   );
-    // } else {
-    //   print("Permission deined");
-    // }
   }
 
   @override
@@ -106,15 +90,25 @@ class _DownIndicatorState extends State<DownIndicator>
       title: Text(widget.episodeDetails['title']),
       //FIXME : Change the pause and play
       trailing: IconButton(
-        onPressed: () => _handleOnPressed(),
-        icon: AnimatedIcon(
-          icon: AnimatedIcons.pause_play,
-          progress: _animationController,
-        ),
+          onPressed: () async {
+            var id = widget.episodeDetails["downloadTaskId"].toString().trim();
+            var taskdetails = await FlutterDownloader.loadTasksWithRawQuery(
+                query: 'SELECT * FROM task WHERE task_id="' + id + '"');
+            print(
+                'taskDetails : $taskdetails Task Download : ${taskdetails![0].status}');
+          },
+          icon: Icon(buttonPP)),
+
+      isThreeLine: true,
+
+      subtitle: Column(
+        children: [
+          // Text('Downloading Progress : $downloadProgress / 100'),
+          SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(widget.episodeDetails["url"]))
+        ],
       ),
-      // IconButton(
-      //     onPressed: () {}, icon: const Icon(Icons.clear_rounded)),
-      subtitle: Text('Show Progress\n${widget.episodeDetails["url"]}'),
     ));
   }
 }

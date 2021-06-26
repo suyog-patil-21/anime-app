@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:flutter/rendering.dart';
 import 'package:web_scraper/web_scraper.dart';
 
 const mainPageurl = 'https://eng.cartoonsarea.xyz';
@@ -100,9 +98,16 @@ Future<Map<String, dynamic>> pureElement(
       'title': temptitle[0]['title'],
       'url': mainPageurl +
           '/USER-DATA/Cartoonsarea/English/${titleName[0]}/$titleName/Season $seasonNum/Episode ${temptitle[0]['title'].toString().substring(0, temptitle[0]['title'].toString().indexOf(' '))}//${temptitle[0]['title'].toString()}'
-              .replaceAll(' ', '%20')
+              .replaceAll(' ', '%20'),
+      'downloadTaskId': 'undefined'
     };
   } else {
     return {};
   }
 }
+
+// ! FIXME : Solve this error afterwards
+//https://eng.cartoonsarea.xyz/USER-DATA/Cartoonsarea/English/D/Demon%20Slayer/Season%201/Episode%208//08%20The%20Smell%20of%20Enchanting%20Blood.mp4
+
+// Program Genreated
+//https://eng.cartoonsarea.xyz/USER-DATA/Cartoonsarea/English/D/Demon%20Slayer/Season%201/Episode%2008//08%20The%20Smell%20of%20Enchanting%20Blood.mp4

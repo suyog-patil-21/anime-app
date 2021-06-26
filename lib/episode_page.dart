@@ -1,6 +1,5 @@
 import 'package:anime_app/common_widgets.dart';
 import 'package:anime_app/models/download_model.dart';
-import 'package:anime_app/download_page.dart';
 import 'package:anime_app/fetch_details/fetch_titles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -93,8 +92,8 @@ class _EpisodesPageState extends State<EpisodesPage> {
                       seasonInit = newValue!;
                       isLoading = false;
                     });
-                    debugPrint(
-                        '\t\t\t>>>>   season number :$seasonInit season url :$seasonlisturl');
+                    // debugPrint(
+                    // '\t\t\t>>>>   season number :$seasonInit season url :$seasonlisturl');
                     getEpisode();
                   },
                 ),

@@ -1,13 +1,21 @@
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:anime_app/Series_page.dart';
 import 'package:anime_app/download_page.dart';
+import 'package:anime_app/models/download_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+
+import 'common_widgets.dart';
 
 final List<String> alpha = [
   'B',
   'C',
   'D',
-  'E',
   'F',
   'G',
   'H',
@@ -32,8 +40,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ReceivePort receivePort = ReceivePort();
+  var downloadProgress;
+  @override
+  void initState() {
+    super.initState();
+
+//register a send port for the other isolates
+    IsolateNameServer.registerPortWithName(
+        receivePort.sendPort, "Anime_download");
+
+    ///Listening for the data is comming other isolataes
+    receivePort.listen((message) {
+      print('this is the message : $message');
+      setState(() {
+        downloadProgress = message[2];
+      });
+      print('downloadProgress : $downloadProgress');
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
+  }
+
+  static downloadCallback(id, status, progress) {
+    ///Looking up for a send port
+    SendPort? sendPort = IsolateNameServer.lookupPortByName("Anime_download");
+
+    ///ssending the data
+    sendPort!.send([id, status, progress]);
+  }
+
   @override
   Widget build(BuildContext context) {
+    _getStoragePermission();
     return Scaffold(
         appBar: AppBar(
           actions: [
@@ -67,6 +106,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         })));
               }),
         ));
+  }
+
+  // * for getting storage permission details
+  Future _getStoragePermission() async {
+    if (await Permission.storage.request().isGranted) {
+      DownloadModal.storagePermission = true;
+      print('Storage Permission : ${DownloadModal.storagePermission}');
+    }
+  }
+
+  @override
+  void dispose() {
+    _unbindBackgroundIsolate();
+    super.dispose();
+  }
+
+  void _unbindBackgroundIsolate() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
   }
 }
 
