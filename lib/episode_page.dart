@@ -3,7 +3,6 @@ import 'package:anime_app/models/dataconverter_data_model.dart';
 import 'package:anime_app/models/download_data_model.dart';
 import 'package:anime_app/models/download_model.dart';
 import 'package:anime_app/fetch_details/fetch_titles.dart';
-import 'package:anime_app/models/episode_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -126,7 +125,7 @@ class _EpisodesPageState extends State<EpisodesPage> {
                     icon: const Icon(Icons.sim_card_download),
                     onPressed: () async {
                       debugPrint(
-                          'single download pressed ${episodeNoList[index]}');
+                          'single download pressed ${episodeNoList[index].episodeDetails!.title}');
                       var temp = await pureElement(
                           episodeNoList[index]
                               .episodeDetails!
@@ -135,8 +134,12 @@ class _EpisodesPageState extends State<EpisodesPage> {
                               .toString(),
                           widget.seriestitle,
                           seasonInit.toString());
+
                       var addsingle =
                           Provider.of<DownloadModal>(context, listen: false);
+
+                      episodeNoList[index].downloadContent =
+                          DataConverter.fromPureMap(temp);
                       addsingle.addDownload(episodeNoList[index]);
                     },
                   ),

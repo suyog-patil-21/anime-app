@@ -14,6 +14,9 @@ class DataConverter {
         attributes: Attributes.fromMap(json["attributes"]),
       );
 
+  factory DataConverter.fromPureMap(Map<String, dynamic> json) => DataConverter(
+      title: json['title'], attributes: Attributes(href: json['url']));
+
   Map<String, dynamic> toMap() => {
         "title": title,
         "attributes": attributes!.toMap(),

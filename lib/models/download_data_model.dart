@@ -1,5 +1,4 @@
 import 'package:anime_app/models/dataconverter_data_model.dart';
-import 'package:anime_app/models/episode_data_model.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 // class SeriesData {
@@ -22,18 +21,14 @@ class MyDownloadTaskInfo {
   // final String? url;
   // EpisodeData({this.episodeName, this.url});
   DataConverter? episodeDetails;
+  DataConverter? downloadContent;
   int? seasonNo;
   String? seriestitleName;
   MyDownloadTaskInfo(
       {this.episodeDetails, this.seasonNo, this.seriestitleName});
+
   // * Download TASK INFO
   String? taskId;
   int? progress = 0;
   DownloadTaskStatus? status = DownloadTaskStatus.undefined;
-
-  factory MyDownloadTaskInfo.fromMap(Map<String, dynamic> json) =>
-      MyDownloadTaskInfo(
-        episodeDetails: DataConverter(
-            title: json['title'], attributes: Attributes(href: json['url'])),
-      );
 }

@@ -3,7 +3,6 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:anime_app/models/download_data_model.dart';
-import 'package:anime_app/models/episode_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,9 +14,8 @@ class DownloadModal extends ChangeNotifier {
   get getDownloadList => _downloadList;
   void addDownload(MyDownloadTaskInfo item) async {
     if (!_downloadList.contains(item)) {
-      print('added : item => \n $item');
-      _downloadList
-          .add(MyDownloadTaskInfo(episodeDetails: item.episodeDetails));
+      print('added : item => \n ${item.downloadContent!.title}');
+      _downloadList.add(item);
       if (storagePermission) {
         final externalDir = await _findLocalPath();
         // print(
@@ -25,15 +23,23 @@ class DownloadModal extends ChangeNotifier {
 
         // print(
         //     'File check Present or not : ${await io.File('${io.File(externalDir.toString() + Platform.pathSeparator + item['title'])}').exists()}');
-
-        _downloadList.last.taskId = await FlutterDownloader.enqueue(
+        debugPrint(
+            '******** custompaths +++++ ==>> ${item.downloadContent!.attributes!.href.toString()}');
+        item.taskId = await FlutterDownloader.enqueue(
           // url: 'https://source.unsplash.com/collection/190727/1600x900',
-          url: item.episodeDetails!.attributes!.href.toString(),
-          fileName: item.episodeDetails!.title,
+          url: item.downloadContent!.attributes!.href.toString(),
+          fileName: item.downloadContent!.title,
           savedDir: externalDir.toString(),
           showNotification: true,
           openFileFromNotification: true,
         );
+        List<DownloadTask>? dstatus = await FlutterDownloader.loadTasksWithRawQuery(
+            query:
+                'SELECT * FROM task where task_id="${item.taskId.toString()}"');
+
+        print(
+            '===============\n============\n dstatus runtime type : ${dstatus.runtimeType} \n ${dstatus![0]}');
+        item.status = dstatus[0].status;
         // debugPrint(
         //     'what is did : $taskid  \n runtimetype : ${taskid.runtimeType}'); // ! : some random numebr, Runtimetype  =string
         // item.taskId = taskid.toString();
@@ -59,7 +65,7 @@ class DownloadModal extends ChangeNotifier {
 
   void removeDownload(MyDownloadTaskInfo item) async {
     if (_downloadList.isNotEmpty && _downloadList.contains(item)) {
-      debugPrint('removed : item => \n ${item.episodeDetails!.title}');
+      debugPrint('removed : item => \n ${item.downloadContent!.title}');
       _downloadList.remove(item);
       await FlutterDownloader.remove(
           taskId: item.taskId.toString(),
@@ -89,13 +95,13 @@ class DownloadModal extends ChangeNotifier {
     send.send([id, status, progress]);
   }
 }
+// TODO : 1. using shared Preferences
+// TODO :    SharedPrefrences
 
-// TODO : 1. To Download working
-// // TODO : * access permission first 'prmission_handler'
-// // TODO : * access path first second 'path_provider'
-// // TODO :  then do the downloading part third 'flutter_downloader'
-// TODO : Fix the download
+// TODO : 2. To Download working
+// TODO :    Fix pause play in Downloads_page
 
-// TODO : using shared Preferences
-// TODO : 2 To implent video player
-// TODO : 3. Add Title(cover) image for the series
+// TODO : 3. To implent video player
+// TODO : 4. Add Title(cover) image for the series
+
+// FIXME : 5. Check the the urls some are wrongly genrated

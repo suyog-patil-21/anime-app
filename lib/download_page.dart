@@ -31,7 +31,7 @@ class _DownloadPageState extends State<DownloadPage> {
                   // Then show a snackbar.
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(
-                          '${item.episodeDetails!.title} close downloading')));
+                          '${item.downloadContent!.title} close downloading')));
                 },
                 // Show a red background as the item is swiped away.
                 background: Container(
@@ -48,7 +48,7 @@ class _DownloadPageState extends State<DownloadPage> {
                         ),
                       ],
                     )),
-                child: DownIndicator(details: data.getDownloadList[index]),
+                child: DownIndicator(details: item),
               );
             });
       }),
@@ -90,7 +90,7 @@ class _DownIndicatorState extends State<DownIndicator> {
       onTap: () {
         FlutterDownloader.open(taskId: widget.details.taskId.toString());
       },
-      title: Text(widget.details.episodeDetails!.title.toString()),
+      title: Text(widget.details.downloadContent!.title.toString()),
       //FIXME : Change the pause and play
       trailing: IconButton(
           onPressed: () async {
@@ -117,7 +117,7 @@ class _DownIndicatorState extends State<DownIndicator> {
           SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Text(
-                  widget.details.episodeDetails!.attributes!.href.toString()))
+                  widget.details.downloadContent!.attributes!.href.toString()))
         ],
       ),
     ));
