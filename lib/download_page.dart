@@ -1,3 +1,4 @@
+import 'package:anime_app/models/download_data_model.dart';
 import 'package:anime_app/models/download_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -17,18 +18,20 @@ class _DownloadPageState extends State<DownloadPage> {
         centerTitle: true,
       ),
       body: Consumer<DownloadModal>(builder: (context, data, child) {
+        List<MyDownloadTaskInfo> dlist = data.getDownloadList;
         return ListView.builder(
-            itemCount: data.getDownloadList.length,
+            itemCount: dlist.length,
             itemBuilder: (BuildContext context, index) {
-              final item = data.getDownloadList[index];
+              final item = dlist[index];
               return Dismissible(
-                key: Key(item['title']),
+                key: Key(item.taskId.toString()),
                 onDismissed: (direction) {
                   // Remove the item from the data source.
                   data.removeDownload(item);
                   // Then show a snackbar.
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('${item["title"]} close download')));
+                      content: Text(
+                          '${item.episodeDetails!.title} close downloading')));
                 },
                 // Show a red background as the item is swiped away.
                 background: Container(
@@ -45,8 +48,7 @@ class _DownloadPageState extends State<DownloadPage> {
                         ),
                       ],
                     )),
-                child:
-                    DownIndicator(episodeDetails: data.getDownloadList[index]),
+                child: DownIndicator(details: data.getDownloadList[index]),
               );
             });
       }),
@@ -55,30 +57,28 @@ class _DownloadPageState extends State<DownloadPage> {
 }
 
 class DownIndicator extends StatefulWidget {
-  var episodeDetails;
-  DownIndicator({Key? key, required this.episodeDetails}) : super(key: key);
+  MyDownloadTaskInfo details;
+  DownIndicator({Key? key, required this.details}) : super(key: key);
   @override
   _DownIndicatorState createState() => _DownIndicatorState();
 }
 
 class _DownIndicatorState extends State<DownIndicator> {
   // * used for Animation Control
-
   IconData buttonPP = Icons.pause_rounded;
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  // }
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void onpressed() {
     setState(() {
       if (true) {
         Provider.of<DownloadModal>(context, listen: false)
-            .pauseDownload(widget.episodeDetails);
+            .pauseDownload(widget.details);
       } else {
         Provider.of<DownloadModal>(context, listen: false)
-            .resumeDownload(widget.episodeDetails);
+            .resumeDownload(widget.details);
       }
     });
   }
@@ -87,11 +87,14 @@ class _DownIndicatorState extends State<DownIndicator> {
   Widget build(BuildContext context) {
     return Card(
         child: ListTile(
-      title: Text(widget.episodeDetails['title']),
+      onTap: () {
+        FlutterDownloader.open(taskId: widget.details.taskId.toString());
+      },
+      title: Text(widget.details.episodeDetails!.title.toString()),
       //FIXME : Change the pause and play
       trailing: IconButton(
           onPressed: () async {
-            var id = widget.episodeDetails["downloadTaskId"].toString().trim();
+            var id = widget.details.taskId.toString().trim();
             var taskdetails = await FlutterDownloader.loadTasksWithRawQuery(
                 query: 'SELECT * FROM task WHERE task_id="' + id + '"');
             print(
@@ -104,9 +107,17 @@ class _DownIndicatorState extends State<DownIndicator> {
       subtitle: Column(
         children: [
           // Text('Downloading Progress : $downloadProgress / 100'),
+          Wrap(
+            spacing: 6.0,
+            children: [
+              Text('Series :${widget.details.seriestitleName} '),
+              Text('Season No :${widget.details.seasonNo} '),
+            ],
+          ),
           SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Text(widget.episodeDetails["url"]))
+              child: Text(
+                  widget.details.episodeDetails!.attributes!.href.toString()))
         ],
       ),
     ));

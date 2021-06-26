@@ -99,7 +99,6 @@ Future<Map<String, dynamic>> pureElement(
       'url': mainPageurl +
           '/USER-DATA/Cartoonsarea/English/${titleName[0]}/$titleName/Season $seasonNum/Episode ${temptitle[0]['title'].toString().substring(0, temptitle[0]['title'].toString().indexOf(' '))}//${temptitle[0]['title'].toString()}'
               .replaceAll(' ', '%20'),
-      'downloadTaskId': 'undefined'
     };
   } else {
     return {};

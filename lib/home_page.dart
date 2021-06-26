@@ -8,9 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-
-import 'common_widgets.dart';
 
 final List<String> alpha = [
   'B',
@@ -123,6 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _unbindBackgroundIsolate() {
+    FlutterDownloader.cancelAll();
     IsolateNameServer.removePortNameMapping('downloader_send_port');
   }
 }

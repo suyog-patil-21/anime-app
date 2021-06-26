@@ -1,6 +1,9 @@
 import 'package:anime_app/common_widgets.dart';
+import 'package:anime_app/models/dataconverter_data_model.dart';
+import 'package:anime_app/models/download_data_model.dart';
 import 'package:anime_app/models/download_model.dart';
 import 'package:anime_app/fetch_details/fetch_titles.dart';
+import 'package:anime_app/models/episode_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +22,7 @@ class _EpisodesPageState extends State<EpisodesPage> {
   var seasonlisturl = [];
   var seasonInit = 1; //? for drop down button inital value set to 1
   List<int> seasonCountlist = []; //! if not working use late keyword
-  List<Map<String, dynamic>> episodeNoList = [];
+  List<MyDownloadTaskInfo> episodeNoList = [];
   @override
   initState() {
     super.initState();
@@ -39,11 +42,21 @@ class _EpisodesPageState extends State<EpisodesPage> {
   }
 
   void getEpisode() async {
-    episodeNoList = await fetchepisode(
+    var fetchepisodeNoList = await fetchepisode(
       urlpath: seasonlisturl[seasonInit - 1]['attributes']['href'],
       // seasonNum: seasonInit.toString(),
       // titleName: widget.seriestitle
     );
+    episodeNoList.clear();
+    // * storing value to the episodenoList
+    fetchepisodeNoList.forEach((element) {
+      episodeNoList.add(MyDownloadTaskInfo(
+          episodeDetails: DataConverter.fromMap(element),
+          seasonNo: seasonInit,
+          seriestitleName: widget.seriestitle));
+    });
+
+    print('\n\n getEpisode from: ${episodeNoList[0].episodeDetails!.title} ');
     setState(() {
       isLoading = true;
     });
@@ -83,7 +96,7 @@ class _EpisodesPageState extends State<EpisodesPage> {
                       seasonCountlist.map<DropdownMenuItem<int>>((int value) {
                     return DropdownMenuItem<int>(
                       value: value,
-                      child: Text('Sesason $value'),
+                      child: Text('Season $value'),
                     );
                   }).toList(),
                   value: seasonInit,
@@ -115,12 +128,16 @@ class _EpisodesPageState extends State<EpisodesPage> {
                       debugPrint(
                           'single download pressed ${episodeNoList[index]}');
                       var temp = await pureElement(
-                          episodeNoList[index]['attributes']['href'],
+                          episodeNoList[index]
+                              .episodeDetails!
+                              .attributes!
+                              .href
+                              .toString(),
                           widget.seriestitle,
                           seasonInit.toString());
                       var addsingle =
                           Provider.of<DownloadModal>(context, listen: false);
-                      addsingle.addDownload(temp);
+                      addsingle.addDownload(episodeNoList[index]);
                     },
                   ),
                   tileColor: Colors.grey[900],
@@ -133,7 +150,7 @@ class _EpisodesPageState extends State<EpisodesPage> {
                   ),
                   title: Wrap(children: [
                     Text(
-                      '${episodeNoList[index]['title']}',
+                      episodeNoList[index].episodeDetails!.title.toString(),
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                   ]));

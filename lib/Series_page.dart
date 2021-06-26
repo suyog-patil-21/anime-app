@@ -1,15 +1,13 @@
 import 'package:anime_app/episode_page.dart';
 import 'package:anime_app/fetch_details/fetch_titles.dart';
+import 'package:anime_app/models/dataconverter_data_model.dart';
 import 'package:flutter/material.dart';
 
 import 'common_widgets.dart';
 
 class SeriesPage extends StatefulWidget {
-  var key;
-
   var titleBName;
-
-  SeriesPage({required this.titleBName, this.key}) : super(key: key);
+  SeriesPage({required this.titleBName, Key? key}) : super(key: key);
 
   @override
   _SeriesPageState createState() => _SeriesPageState();
@@ -17,7 +15,8 @@ class SeriesPage extends StatefulWidget {
 
 class _SeriesPageState extends State<SeriesPage> {
   bool isLoading = false;
-  List<Map<String, dynamic>> seriallist = [];
+  // List<Map<String, dynamic>> seriallist = [];
+  List<DataConverter>? seriallist = [];
   @override
   void initState() {
     super.initState();
@@ -25,10 +24,14 @@ class _SeriesPageState extends State<SeriesPage> {
   }
 
   void getdata() async {
-    seriallist =
-        await fetchlist(urlpath: widget.titleBName); // sn = total no of series
+    // sn = total no of series
+    var fetchseriallist = await fetchlist(urlpath: widget.titleBName);
+    fetchseriallist.forEach((element) {
+      seriallist!.add(DataConverter.fromMap(element));
+    });
+
     setState(() {
-      print('Series Count = ${seriallist.length}');
+      debugPrint('Series Count = ${seriallist!.length}');
       isLoading = true;
     });
   }
@@ -50,19 +53,22 @@ class _SeriesPageState extends State<SeriesPage> {
                     crossAxisCount: 3,
                     mainAxisExtent: 222.0,
                   ),
-                  itemCount: seriallist.length,
+                  itemCount: seriallist!.length,
                   itemBuilder: (context, index) {
                     return FlatButton(
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (_) => EpisodesPage(
-                                    seaonUrl: seriallist[index]['attributes']
-                                        ['href'],
-                                    seriestitle: seriallist[index]['title'],
+                                    seaonUrl: seriallist![index]
+                                        .attributes!
+                                        .href
+                                        .toString(),
+                                    seriestitle:
+                                        seriallist![index].title.toString(),
                                   )));
                         },
-                        child:
-                            titleBanner(titleName: seriallist[index]['title']));
+                        child: titleBanner(
+                            titleName: seriallist![index].title.toString()));
                   })),
     );
   }
