@@ -5,6 +5,7 @@ import 'package:anime_app/models/dataconverter_data_model.dart';
 import 'package:anime_app/models/download_data_model.dart';
 import 'package:anime_app/models/download_model.dart';
 import 'package:anime_app/fetch_details/fetch_titles.dart';
+import 'package:anime_app/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -92,6 +93,8 @@ class _EpisodesPageState extends State<EpisodesPage> {
     });
   }
 
+  void setTruePlayFile(int index) async {}
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -166,21 +169,39 @@ class _EpisodesPageState extends State<EpisodesPage> {
                           widget.seriestitle,
                           seasonInit.toString());
 
-                      var addsingle =
-                          Provider.of<DownloadModal>(context, listen: false);
-
                       episodeNoList[index].downloadContent =
                           DataConverter.fromPureMap(temp);
+                      var addsingle =
+                          Provider.of<DownloadModal>(context, listen: false);
                       addsingle.addDownload(episodeNoList[index]);
                     },
                   ),
                   tileColor: Colors.grey[900],
                   leading: IconButton(
                     tooltip: 'Play',
-                    onPressed: () {
-                      debugPrint('hello $index');
-                    },
                     icon: const Icon(Icons.play_arrow),
+                    onPressed: () async {
+                      var temp = await pureElement(
+                          episodeNoList[index]
+                              .episodeDetails!
+                              .attributes!
+                              .href
+                              .toString(),
+                          widget.seriestitle,
+                          seasonInit.toString());
+
+                      episodeNoList[index].downloadContent =
+                          DataConverter.fromPureMap(temp);
+                      // debugPrint(
+                      //     'playing the Video ${episodeNoList[index].downloadContent!.attributes!.href}');
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => PlayMyVideo(
+                              videoUrl: episodeNoList[index]
+                                  .downloadContent!
+                                  .attributes!
+                                  .href
+                                  .toString())));
+                    },
                   ),
                   title: Wrap(children: [
                     Text(

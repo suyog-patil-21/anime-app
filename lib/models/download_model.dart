@@ -75,11 +75,9 @@ class DownloadModal extends ChangeNotifier {
   // }
 }
 
-// TODO : 2. To Download working
+// ! FIXME : 1. Check downloads urls some are wrongly genrated especialy under 10 episode number ex. 01 02 ...[happend other than naruto and boruto]
+// TODO : 2. Add Title(cover) image for the series
+// TODO : 3. change some design of video
+// TODO : 4. To Download working
 // TODO :    Progress for download only working for single download
 // TODO :    If nessary change pause play
-
-// TODO : 3. To implent video player
-// TODO : 4. Add Title(cover) image for the series
-
-// ! FIXME : 5. Check downloads urls some are wrongly genrated especialy under 10 episode number ex. 01 02 ...
