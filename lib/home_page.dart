@@ -2,6 +2,7 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:anime_app/Series_page.dart';
+import 'package:anime_app/common_widgets.dart';
 import 'package:anime_app/download_page.dart';
 import 'package:anime_app/models/download_model.dart';
 import 'package:flutter/material.dart';
@@ -37,25 +38,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  ReceivePort receivePort = ReceivePort();
-  var downloadProgress;
   @override
   void initState() {
     super.initState();
-
-//register a send port for the other isolates
+    //register a send port for the other isolates
     IsolateNameServer.registerPortWithName(
         receivePort.sendPort, "Anime_download");
+    //Listening for the data is comming other isolataes
 
-    ///Listening for the data is comming other isolataes
-    receivePort.listen((message) {
-      print('this is the message : $message');
-      setState(() {
-        downloadProgress = message[2];
-      });
-      print('downloadProgress : $downloadProgress');
-    });
-
+    // for downlaod callBack
     FlutterDownloader.registerCallback(downloadCallback);
   }
 
@@ -116,11 +107,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     _unbindBackgroundIsolate();
+    receivePort.close();
     super.dispose();
   }
 
-  void _unbindBackgroundIsolate() {
-    FlutterDownloader.cancelAll();
+  void _unbindBackgroundIsolate() async {
+    await FlutterDownloader.cancelAll();
     IsolateNameServer.removePortNameMapping('downloader_send_port');
   }
 }

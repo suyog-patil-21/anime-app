@@ -1,3 +1,6 @@
+import 'dart:isolate';
+
+import 'package:anime_app/common_widgets.dart';
 import 'package:anime_app/models/download_data_model.dart';
 import 'package:anime_app/models/download_model.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +27,7 @@ class _DownloadPageState extends State<DownloadPage> {
             itemBuilder: (BuildContext context, index) {
               final item = dlist[index];
               return Dismissible(
-                key: Key(item.taskId.toString()),
+                key: Key(item.downloadContent!.title.toString()),
                 onDismissed: (direction) {
                   // Remove the item from the data source.
                   data.removeDownload(item);
@@ -64,60 +67,83 @@ class DownIndicator extends StatefulWidget {
 }
 
 class _DownIndicatorState extends State<DownIndicator> {
-  // * used for Animation Control
   IconData buttonPP = Icons.pause_rounded;
+  bool pp = true;
   @override
   void initState() {
     super.initState();
+    print('inistate working at start');
+// ! FIXME : recieverPort : to Update the file
+    /*  if (mounted) {
+      receivePort.listen((dynamic data) {
+        String id = data[0];
+        DownloadTaskStatus status = data[1];
+        int progress = data[2];
+        print('init Progress : $progress initState Status : $status ');
+        if (widget.details.taskId == id) {
+          setState(() {
+            widget.details.status = status;
+            widget.details.progress = progress;
+          });
+        }
+      });
+    } */
+    print('inistate working at end');
   }
 
   void onpressed() {
+    print(
+        'Widget details updated or Not check : ${widget.details.status}, ${widget.details.taskId}, ${widget.details.progress}');
     setState(() {
-      if (true) {
+      if (pp) {
+        buttonPP = Icons.play_arrow_rounded;
         Provider.of<DownloadModal>(context, listen: false)
             .pauseDownload(widget.details);
       } else {
+        buttonPP = Icons.pause_rounded;
         Provider.of<DownloadModal>(context, listen: false)
             .resumeDownload(widget.details);
       }
     });
+    pp = !pp;
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
         child: ListTile(
-      onTap: () {
-        FlutterDownloader.open(taskId: widget.details.taskId.toString());
+      leading: const Icon(
+        Icons.file_copy_rounded,
+        size: 40.0,
+      ),
+      onTap: () async {
+        if (!(await FlutterDownloader.open(
+            taskId: widget.details.taskId.toString()))) {
+          Scaffold.of(context).showSnackBar(const SnackBar(
+              content: Text("File can't be Open While Downloading")));
+        } else {
+          buttonPP = Icons.open_in_browser_rounded;
+        }
       },
       title: Text(widget.details.downloadContent!.title.toString()),
       //FIXME : Change the pause and play
-      trailing: IconButton(
-          onPressed: () async {
-            var id = widget.details.taskId.toString().trim();
-            var taskdetails = await FlutterDownloader.loadTasksWithRawQuery(
-                query: 'SELECT * FROM task WHERE task_id="' + id + '"');
-            print(
-                'taskDetails : $taskdetails Task Download : ${taskdetails![0].status}');
-          },
-          icon: Icon(buttonPP)),
+      trailing: IconButton(onPressed: onpressed, icon: Icon(buttonPP)),
 
       isThreeLine: true,
 
       subtitle: Column(
         children: [
-          // Text('Downloading Progress : $downloadProgress / 100'),
+          // Text('Downloading: ${widget.details.progress}% ',
+          // style: const TextStyle(color: Colors.lightGreen)),
           Wrap(
-            spacing: 6.0,
+            spacing: 8.0,
             children: [
               Text('Series :${widget.details.seriestitleName} '),
               Text('Season No :${widget.details.seasonNo} '),
             ],
           ),
-          SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Text(
-                  widget.details.downloadContent!.attributes!.href.toString()))
+          Text(widget.details.downloadContent!.attributes!.href.toString(),
+              overflow: TextOverflow.ellipsis, maxLines: 1)
         ],
       ),
     ));

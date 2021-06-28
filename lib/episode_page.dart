@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:anime_app/common_widgets.dart';
 import 'package:anime_app/models/dataconverter_data_model.dart';
 import 'package:anime_app/models/download_data_model.dart';
@@ -5,6 +7,7 @@ import 'package:anime_app/models/download_model.dart';
 import 'package:anime_app/fetch_details/fetch_titles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EpisodesPage extends StatefulWidget {
   String seaonUrl; // url to search number of season
@@ -32,7 +35,22 @@ class _EpisodesPageState extends State<EpisodesPage> {
   }
 
   void fetchList() async {
-    seasonlisturl = await fetchlist(urlpath: widget.seaonUrl);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> tempPrefSeasonList = [];
+    if (!prefs.containsKey('${widget.seriestitle}+seasonlisturl')) {
+      seasonlisturl = await fetchlist(urlpath: widget.seaonUrl);
+      for (var item in seasonlisturl) {
+        tempPrefSeasonList.add(json.encode(item));
+      }
+      prefs.setStringList(
+          '${widget.seriestitle}+seasonlisturl', tempPrefSeasonList);
+    } else {
+      tempPrefSeasonList =
+          prefs.getStringList('${widget.seriestitle}+seasonlisturl')!;
+      for (var item in tempPrefSeasonList) {
+        seasonlisturl.add(json.decode(item));
+      }
+    }
     setState(() {
       seasonInit = 1;
       seasonCountlist = List<int>.generate(seasonlisturl.length, (i) => i + 1);
@@ -41,21 +59,34 @@ class _EpisodesPageState extends State<EpisodesPage> {
   }
 
   void getEpisode() async {
-    var fetchepisodeNoList = await fetchepisode(
-      urlpath: seasonlisturl[seasonInit - 1]['attributes']['href'],
-      // seasonNum: seasonInit.toString(),
-      // titleName: widget.seriestitle
-    );
     episodeNoList.clear();
-    // * storing value to the episodenoList
-    fetchepisodeNoList.forEach((element) {
-      episodeNoList.add(MyDownloadTaskInfo(
-          episodeDetails: DataConverter.fromMap(element),
-          seasonNo: seasonInit,
-          seriestitleName: widget.seriestitle));
-    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> tempPrefSeasonEpisodeList = [];
+    if (!prefs.containsKey('${widget.seriestitle}+${seasonInit - 1}')) {
+      var fetchepisodeNoList = await fetchepisode(
+          urlpath: seasonlisturl[seasonInit - 1]['attributes']['href']);
+      // * storing value to the episodenoList
+      fetchepisodeNoList.forEach((item) {
+        tempPrefSeasonEpisodeList.add(json.encode(item));
+        episodeNoList.add(MyDownloadTaskInfo(
+            episodeDetails: DataConverter.fromMap(item),
+            seasonNo: seasonInit,
+            seriestitleName: widget.seriestitle));
+      });
+      prefs.setStringList(
+          '${widget.seriestitle}+${seasonInit - 1}', tempPrefSeasonEpisodeList);
+    } else {
+      tempPrefSeasonEpisodeList =
+          prefs.getStringList('${widget.seriestitle}+${seasonInit - 1}')!;
+      for (var item in tempPrefSeasonEpisodeList) {
+        episodeNoList.add(MyDownloadTaskInfo(
+            episodeDetails: DataConverter.fromMap(json.decode(item)),
+            seasonNo: seasonInit,
+            seriestitleName: widget.seriestitle));
+      }
+    }
 
-    print('\n\n getEpisode from: ${episodeNoList[0].episodeDetails!.title} ');
+    // print('\n\n getEpisode from: ${episodeNoList[0].episodeDetails!.title} ');
     setState(() {
       isLoading = true;
     });

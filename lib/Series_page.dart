@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:anime_app/episode_page.dart';
 import 'package:anime_app/fetch_details/fetch_titles.dart';
 import 'package:anime_app/models/dataconverter_data_model.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'common_widgets.dart';
 
@@ -15,8 +17,8 @@ class SeriesPage extends StatefulWidget {
 
 class _SeriesPageState extends State<SeriesPage> {
   bool isLoading = false;
-  // List<Map<String, dynamic>> seriallist = [];
-  List<DataConverter>? seriallist = [];
+
+  List<DataConverter>? seriallist = []; // ? for UI element
   @override
   void initState() {
     super.initState();
@@ -24,12 +26,24 @@ class _SeriesPageState extends State<SeriesPage> {
   }
 
   void getdata() async {
-    // sn = total no of series
-    var fetchseriallist = await fetchlist(urlpath: widget.titleBName);
-    fetchseriallist.forEach((element) {
-      seriallist!.add(DataConverter.fromMap(element));
-    });
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> tempprefdata = [];
+    if (!prefs.containsKey('${widget.titleBName}')) {
+      List<Map<String, dynamic>> fetchseriallist;
+      fetchseriallist = await fetchlist(urlpath: widget.titleBName);
+      for (var item in fetchseriallist) {
+        tempprefdata.add(json.encode(item));
+        seriallist!.add(DataConverter.fromMap(item));
+      }
+      prefs.setStringList('${widget.titleBName}', tempprefdata);
+    } else {
+      tempprefdata = prefs.getStringList('${widget.titleBName}')!;
+      for (var item in tempprefdata) {
+        seriallist!.add(DataConverter.fromMap(json.decode(item)));
+      }
+    }
+    // prefs.setStringList('fetchseriallist',);
+    // print('fetchseriallist: \n ${fetchseriallist}');
     setState(() {
       debugPrint('Series Count = ${seriallist!.length}');
       isLoading = true;

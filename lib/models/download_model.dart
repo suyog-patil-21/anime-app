@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:isolate';
-import 'dart:ui';
 
 import 'package:anime_app/models/download_data_model.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 
 class DownloadModal extends ChangeNotifier {
   List<MyDownloadTaskInfo> _downloadList = [];
-
   static bool storagePermission = false;
   get getDownloadList => _downloadList;
   void addDownload(MyDownloadTaskInfo item) async {
@@ -18,11 +15,6 @@ class DownloadModal extends ChangeNotifier {
       _downloadList.add(item);
       if (storagePermission) {
         final externalDir = await _findLocalPath();
-        // print(
-        //     'file Present or not ${io.File(externalDir.toString() + Platform.pathSeparator + item['title'])}'); // ! : /storage/emulated/0/Android/data/com.example.anime_app/files/08 The Smell of Enchanting Blood.mp4
-
-        // print(
-        //     'File check Present or not : ${await io.File('${io.File(externalDir.toString() + Platform.pathSeparator + item['title'])}').exists()}');
         debugPrint(
             '******** custompaths +++++ ==>> ${item.downloadContent!.attributes!.href.toString()}');
         item.taskId = await FlutterDownloader.enqueue(
@@ -33,21 +25,8 @@ class DownloadModal extends ChangeNotifier {
           showNotification: true,
           openFileFromNotification: true,
         );
-        List<DownloadTask>? dstatus = await FlutterDownloader.loadTasksWithRawQuery(
-            query:
-                'SELECT * FROM task where task_id="${item.taskId.toString()}"');
-
-        print(
-            '===============\n============\n dstatus runtime type : ${dstatus.runtimeType} \n ${dstatus![0]}');
-        item.status = dstatus[0].status;
-        // debugPrint(
-        //     'what is did : $taskid  \n runtimetype : ${taskid.runtimeType}'); // ! : some random numebr, Runtimetype  =string
-        // item.taskId = taskid.toString();
-        // debugPrint(' download Status id  : ${taskid.toString()}');
       } else {
-        print('Storage Permission Denied OR File May Exisits');
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //     const SnackBar(content: Text('Storage Permission Denied')));
+        debugPrint('Storage Permission Denied OR File May Exisits');
       }
     }
     notifyListeners();
@@ -87,21 +66,20 @@ class DownloadModal extends ChangeNotifier {
     return directory?.path;
   }
 
-  void downloadCallback(String id, DownloadTaskStatus status, int progress) {
-    print(
-        'Background Isolate Callback: task ($id) is in status ($status) and process ($progress)');
+  // void downloadCallback(String id, DownloadTaskStatus status, int progress) {
+  //   print(
+  //       'Background Isolate Callback: task ($id) is in status ($status) and process ($progress)');
 
-    final SendPort send = IsolateNameServer.lookupPortByName('Anime_download')!;
-    send.send([id, status, progress]);
-  }
+  //   final SendPort send = IsolateNameServer.lookupPortByName('Anime_download')!;
+  //   send.send([id, status, progress]);
+  // }
 }
-// TODO : 1. using shared Preferences
-// TODO :    SharedPrefrences
 
 // TODO : 2. To Download working
-// TODO :    Fix pause play in Downloads_page
+// TODO :    Progress for download only working for single download
+// TODO :    If nessary change pause play
 
 // TODO : 3. To implent video player
 // TODO : 4. Add Title(cover) image for the series
 
-// FIXME : 5. Check the the urls some are wrongly genrated
+// ! FIXME : 5. Check downloads urls some are wrongly genrated especialy under 10 episode number ex. 01 02 ...

@@ -2,6 +2,8 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 
+ReceivePort receivePort = ReceivePort();
+
 // * Loading Widget with circular progress indicator
 Widget loadingWidget({required double width}) {
   return Center(
