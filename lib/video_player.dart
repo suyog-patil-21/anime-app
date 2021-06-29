@@ -9,11 +9,10 @@ class PlayMyVideo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-          child: ChewieListItem(
-              videoPlayerController: VideoPlayerController.network(
+      body: ChewieListItem(
+          videoPlayerController: VideoPlayerController.network(
         videoUrl,
-      ))),
+      )),
     );
   }
 }

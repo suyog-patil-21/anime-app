@@ -47,9 +47,7 @@ class DownloadModal extends ChangeNotifier {
       debugPrint('removed : item => \n ${item.downloadContent!.title}');
       _downloadList.remove(item);
       await FlutterDownloader.remove(
-          taskId: item.taskId.toString(),
-          shouldDeleteContent:
-              true); //! FIXME : check shouldeleteContent parameter
+          taskId: item.taskId.toString(), shouldDeleteContent: true);
       debugPrint('Downloading stoped and Removed Filed from storage');
     }
     notifyListeners();
@@ -74,10 +72,8 @@ class DownloadModal extends ChangeNotifier {
   //   send.send([id, status, progress]);
   // }
 }
-
-// ! FIXME : 1. Check downloads urls some are wrongly genrated especialy under 10 episode number ex. 01 02 ...[happend other than naruto and boruto]
 // TODO : 2. Add Title(cover) image for the series
-// TODO : 3. change some design of video
+
 // TODO : 4. To Download working
 // TODO :    Progress for download only working for single download
-// TODO :    If nessary change pause play
+// TODO :    change pause play

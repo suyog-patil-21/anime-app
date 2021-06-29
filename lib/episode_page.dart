@@ -93,8 +93,6 @@ class _EpisodesPageState extends State<EpisodesPage> {
     });
   }
 
-  void setTruePlayFile(int index) async {}
-
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -179,7 +177,13 @@ class _EpisodesPageState extends State<EpisodesPage> {
                   tileColor: Colors.grey[900],
                   leading: IconButton(
                     tooltip: 'Play',
-                    icon: const Icon(Icons.play_arrow),
+                    icon: ConstrainedBox(
+                        constraints:
+                            BoxConstraints.tight(Size.fromRadius(35.0)),
+                        child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle, color: Colors.orange),
+                            child: Icon(Icons.play_arrow))),
                     onPressed: () async {
                       var temp = await pureElement(
                           episodeNoList[index]
