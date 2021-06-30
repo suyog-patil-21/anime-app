@@ -30,7 +30,7 @@ class _ChewieListItemState extends State<ChewieListItem> {
       // Prepare the video to be played and display the first frame
       autoInitialize: true,
       looping: widget.looping,
-      // autoPlay: widget.autoplay,
+      autoPlay: true,
       // Errors can occur for example when trying to play a video
       // from a non-existent URL
       errorBuilder: (context, errorMessage) {

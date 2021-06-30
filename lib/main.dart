@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       theme:
           ThemeData(brightness: Brightness.dark, primarySwatch: Colors.orange),
-      home: MyHomePage(),
+      home: SafeArea(child: MyHomePage()),
     );
   }
 }

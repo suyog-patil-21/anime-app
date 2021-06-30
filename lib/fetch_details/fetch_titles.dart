@@ -70,18 +70,6 @@ Future<List<Map<String, dynamic>>> fetchepisode({
     }
   }
   // print('<<<<<<<after PAgination : ${episodeList.length} ');
-  // * to uncomment if doesn't work
-  // for (var element in episodeList) {
-  //   // print('>>>>>>>>>>>>>>searching WEbsite : ${element['attributes']['href']}');
-  //   realepisode.add(await _pureElement(
-  //       element['attributes']['href'], titleName, seasonNum));
-  // }
-  // print('<<<<<<<AT very last after Pagination : ${episodeList.length} ');
-  //* till here
-  // print('\t\t\t   Getting the output : $realepisode');
-  // * to uncomment if doesn't work
-  // return realepisode;
-  // * till here
   return episodeList;
 }
 
@@ -97,7 +85,7 @@ Future<Map<String, dynamic>> pureElement(
     return <String, dynamic>{
       'title': temptitle[0]['title'],
       'url': mainPageurl +
-          '/USER-DATA/Cartoonsarea/English/${titleName[0]}/$titleName/Season $seasonNum/Episode ${temptitle[0]['title'].toString().substring(0, temptitle[0]['title'].toString().indexOf(' '))}//${temptitle[0]['title'].toString()}'
+          '/USER-DATA/Cartoonsarea/English/${titleName[0]}/$titleName/Season $seasonNum/Episode ${int.parse(temptitle[0]['title'].toString().substring(0, temptitle[0]['title'].toString().indexOf(' ')))}//${temptitle[0]['title'].toString()}'
               .replaceAll(' ', '%20'),
     };
   } else {

@@ -1,6 +1,3 @@
-import 'dart:isolate';
-
-import 'package:anime_app/common_widgets.dart';
 import 'package:anime_app/models/download_data_model.dart';
 import 'package:anime_app/models/download_model.dart';
 import 'package:flutter/material.dart';

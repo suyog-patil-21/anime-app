@@ -13,8 +13,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class EpisodesPage extends StatefulWidget {
   String seaonUrl; // url to search number of season
   String seriestitle;
+  String imageurl;
 
-  EpisodesPage({required this.seaonUrl, required this.seriestitle, Key? key})
+  EpisodesPage(
+      {required this.seaonUrl,
+      required this.seriestitle,
+      this.imageurl =
+          'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200',
+      Key? key})
       : super(key: key);
   @override
   _EpisodesPageState createState() => _EpisodesPageState();
@@ -104,9 +110,10 @@ class _EpisodesPageState extends State<EpisodesPage> {
         floating: false,
         expandedHeight: screenSize.height * 0.3,
         flexibleSpace: FlexibleSpaceBar(
-          title: Text(widget.seriestitle),
-          background: const FlutterLogo(),
-        ),
+            title: Text(widget.seriestitle),
+            background: Image.network(widget.imageurl, fit: BoxFit.contain)
+            // const FlutterLogo(),
+            ),
       ),
       SliverToBoxAdapter(
         child: Padding(
@@ -177,13 +184,16 @@ class _EpisodesPageState extends State<EpisodesPage> {
                   tileColor: Colors.grey[900],
                   leading: IconButton(
                     tooltip: 'Play',
-                    icon: ConstrainedBox(
-                        constraints:
-                            BoxConstraints.tight(Size.fromRadius(35.0)),
-                        child: Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle, color: Colors.orange),
-                            child: Icon(Icons.play_arrow))),
+                    icon: Container(
+                      height: 30.0,
+                      width: 30.0,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle, color: Colors.orange),
+                      child: FittedBox(
+                        fit: BoxFit.fill,
+                        child: Icon(Icons.play_arrow),
+                      ),
+                    ),
                     onPressed: () async {
                       var temp = await pureElement(
                           episodeNoList[index]
@@ -196,8 +206,8 @@ class _EpisodesPageState extends State<EpisodesPage> {
 
                       episodeNoList[index].downloadContent =
                           DataConverter.fromPureMap(temp);
-                      // debugPrint(
-                      //     'playing the Video ${episodeNoList[index].downloadContent!.attributes!.href}');
+                      debugPrint(
+                          'playing the Video ${episodeNoList[index].downloadContent!.attributes!.href}');
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => PlayMyVideo(
                               videoUrl: episodeNoList[index]

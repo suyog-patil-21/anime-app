@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:anime_app/fetch_details/fetch_image.dart';
 import 'package:anime_app/models/download_data_model.dart';
+import 'package:anime_app/models/series_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 class DownloadModal extends ChangeNotifier {
   List<MyDownloadTaskInfo> _downloadList = [];
   static bool storagePermission = false;
-  get getDownloadList => _downloadList;
+  List<MyDownloadTaskInfo> get getDownloadList => _downloadList;
   void addDownload(MyDownloadTaskInfo item) async {
     if (!_downloadList.contains(item)) {
       print('added : item => \n ${item.downloadContent!.title}');
@@ -63,16 +65,7 @@ class DownloadModal extends ChangeNotifier {
     }
     return directory?.path;
   }
-
-  // void downloadCallback(String id, DownloadTaskStatus status, int progress) {
-  //   print(
-  //       'Background Isolate Callback: task ($id) is in status ($status) and process ($progress)');
-
-  //   final SendPort send = IsolateNameServer.lookupPortByName('Anime_download')!;
-  //   send.send([id, status, progress]);
-  // }
 }
-// TODO : 2. Add Title(cover) image for the series
 
 // TODO : 4. To Download working
 // TODO :    Progress for download only working for single download
