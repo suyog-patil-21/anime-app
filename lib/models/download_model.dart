@@ -66,7 +66,6 @@ class DownloadModal extends ChangeNotifier {
     return directory?.path;
   }
 }
-
 // TODO : 4. To Download working
 // TODO :    Progress for download only working for single download
 // TODO :    change pause play
