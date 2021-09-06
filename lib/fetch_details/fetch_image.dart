@@ -10,7 +10,7 @@ Future<String> getSeriesCoverImage(String seriestitle) async {
       'https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200';
   if (seriestitle.isNotEmpty && seriestitle != '') {
     if (await _imageScraper.loadWebPage(
-        '/images/search?q=${seriestitle.replaceAll(' ', '%20')}+anime+cover&first=1&tsc=ImageBasicHover')) {
+        '/images/search?q=${seriestitle.replaceAll(' ', '%20')}+anime+title+cover&first=1&tsc=ImageBasicHover')) {
       List<String?> temp = _imageScraper.getElementAttribute(
           'div.imgpt > a.iusc > div.img_cont.hoff > img.mimg', 'src');
       // print('IMAGE SCRAPE:element : $temp');
